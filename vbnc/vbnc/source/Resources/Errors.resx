@@ -605,7 +605,7 @@
     <value>'New' is not valid in this context.</value>
   </data>
   <data name="30201" xml:space="preserve">
-    <value>Expected expression.</value>
+    <value>Expression expected.</value>
   </data>
   <data name="30202" xml:space="preserve">
     <value>CHANGEME</value>
@@ -893,7 +893,7 @@
     <value>Cannot refer to an instance member of a class from within a shared method or shared member initializer without an explicit instance of the class.</value>
   </data>
   <data name="30370" xml:space="preserve">
-    <value>CHANGEME</value>
+    <value>'}}' expected.</value>
   </data>
   <data name="30371" xml:space="preserve">
     <value>CHANGEME</value>
@@ -1941,6 +1941,18 @@
   </data>
   <data name="30983" xml:space="preserve">
     <value>Type of '{0}' is ambiguous because the loop bounds and the step clause do not convert to the same type.</value>
+  </data>
+  <data name="30984" xml:space="preserve">
+    <value>'=' expected (object initializer).</value>
+  </data>
+  <data name="30985" xml:space="preserve">
+    <value>Name of field or property being initialized in an object initializer must start with '.'.</value>
+  </data>
+  <data name="30987" xml:space="preserve">
+    <value>'{{' expected.</value>
+  </data>
+  <data name="30989" xml:space="preserve">
+    <value>Multiple initializations of '{0}'.  Fields and properties can be initialized only once in an object initializer expression.</value>
   </data>
   <data name="31007" xml:space="preserve">
     <value>CHANGEME</value>

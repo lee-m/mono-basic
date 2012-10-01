@@ -107,7 +107,7 @@ Public Class AutoPropertyDeclaration
         'Add a backing field with the name _<property name> to the containing type declaration 
         Dim BackingFieldIdentifier As New Identifier(String.Format("_{0}", Signature.Name))
         m_BackingField = New TypeVariableDeclaration(Parent, New Modifiers(ModifierMasks.Private), BackingFieldIdentifier,
-                                                     False, Signature.TypeName, Nothing, Nothing)
+                                                     False, Signature.TypeName, Nothing, Nothing, Nothing)
 
         'Add the CompilerGeneratedAttribute to the backing field 
         m_BackingField.CustomAttributes = New Attributes(m_BackingField)

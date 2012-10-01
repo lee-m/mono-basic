@@ -2526,7 +2526,7 @@ Public Class Parser
 
     ''' <summary>
     ''' DelegateCreationExpression ::= "New" NonArrayTypeName "(" Expression ")"
-    ''' ObjectCreationExpression   ::= "New" NonArrayTypeName [ "(" [ ArgumentList ] ")" ]
+    ''' ObjectCreationExpression   ::= "New" NonArrayTypeName [ "(" [ ArgumentList ] ")" ] ObjectCreationExpressionInitializer
     ''' </summary>
     ''' <remarks></remarks>
     Private Function ParseDelegateOrObjectCreationExpression(ByVal Parent As ParsedObject) As DelegateOrObjectCreationExpression
@@ -2534,6 +2534,7 @@ Public Class Parser
 
         Dim m_NonArrayTypeName As NonArrayTypeName = Nothing
         Dim m_ArgumentList As ArgumentList = Nothing
+        Dim m_ObjMemInitialiser As ObjectMemberInitializer = Nothing
 
         tm.AcceptIfNotInternalError(KS.[New])
         m_NonArrayTypeName = ParseNonArrayTypeName(result)
@@ -2546,9 +2547,18 @@ Public Class Parser
 
             If tm.AcceptIfNotError(KS.RParenthesis) = False Then Helper.ErrorRecoveryNotImplemented(tm.CurrentLocation)
         End If
+
+        If tm.Accept(KS.With) Then
+
+            Dim fieldInitialisers As Collections.Generic.List(Of FieldInitialiser) = ParseObjectMemberInitializerList(result)
+            m_ObjMemInitialiser = New ObjectMemberInitializer(result)
+            'm_ObjMemInitialiser.Init(fieldInitialisers, result)
+
+        End If
+
         If m_ArgumentList Is Nothing Then m_ArgumentList = New ArgumentList(result)
 
-        result.Init(m_NonArrayTypeName, m_ArgumentList)
+        result.Init(m_NonArrayTypeName, m_ArgumentList, m_ObjMemInitialiser)
 
         Return result
     End Function
@@ -5105,6 +5115,7 @@ Public Class Parser
         Dim m_TypeName As TypeName
         Dim m_VariableInitializer As VariableInitializer
         Dim m_ArgumentList As ArgumentList
+        Dim m_MemberInitList As Collections.Generic.List(Of FieldInitialiser) = Nothing
 
         m_VariableIdentifiers = ParseVariableIdentifiers(Parent)
         If m_VariableIdentifiers Is Nothing Then Helper.ErrorRecoveryNotImplemented(tm.CurrentLocation)
@@ -5145,20 +5156,133 @@ Public Class Parser
             m_ArgumentList = Nothing
         End If
 
-        'result Dim result As New Generic.List(Of VariableDeclaration)
+        'See if we have an object initialiser 
+        If m_IsNew Then
+
+            If tm.Accept(KS.With) Then
+                m_MemberInitList = ParseObjectMemberInitializerList(Parent)
+            End If
+
+        ElseIf Not tm.CurrentToken().IsEndOfStatement() Then
+            Compiler.Report.ShowMessage(Messages.VBNC30205, tm.CurrentToken().Location)
+            tm.GotoEndOfStatement(False)
+        End If
+
         For Each identifier As VariableIdentifier In m_VariableIdentifiers
             Dim varD As VariableDeclaration
+            Dim objMemInitialiser As ObjectMemberInitializer = Nothing
+
             If local Then
-                varD = New LocalVariableDeclaration(Parent, Modifiers, identifier, m_IsNew, m_TypeName, m_VariableInitializer, m_ArgumentList)
+                varD = New LocalVariableDeclaration(Parent)
             Else
-                varD = New TypeVariableDeclaration(Parent, Modifiers, identifier, m_IsNew, m_TypeName, m_VariableInitializer, m_ArgumentList)
+                varD = New TypeVariableDeclaration(Parent)
             End If
+
+            If m_MemberInitList IsNot Nothing Then
+                objMemInitialiser = New ObjectMemberInitializer(varD)
+                objMemInitialiser.Init(m_MemberInitList, New SimpleNameExpression(objMemInitialiser, New Identifier(identifier.Name), Nothing))
+            End If
+
+            varD.Init(Modifiers, identifier, m_IsNew, m_TypeName, m_VariableInitializer, m_ArgumentList, objMemInitialiser)
             varD.Location = identifier.Location
             varD.CustomAttributes = Info.Attributes
             result.Add(varD)
         Next
 
         Return True
+    End Function
+
+    ''' <summary>
+    ''' ObjectMemberInitializer  ::=
+    '''    With  OpenCurlyBrace  FieldInitializerList  CloseCurlyBrace
+    ''' 
+    ''' FieldInitializerList  ::=
+    '''    FieldInitializer  |
+    '''    FieldInitializerList  Comma  FieldInitializer
+    ''' 
+    ''' FieldInitializer ::=  
+    '''     [  .  IdentifierOrKeyword  Equals  ]  Expression
+    ''' </summary>
+    ''' <param name="Parent">Parent parsed object of the initialiser</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function ParseObjectMemberInitializerList(ByVal Parent As ParsedObject) As Collections.Generic.List(Of FieldInitialiser)
+
+        If Not tm.Accept(KS.LBrace) Then
+            Compiler.Report.ShowMessage(Messages.VBNC30987, tm.CurrentLocation)
+            tm.GotoEndOfStatement(False)
+            Return Nothing
+        End If
+
+        Dim fieldInitialisers As New Collections.Generic.List(Of FieldInitialiser)
+        Dim seenFields As New Collections.Generic.HashSet(Of String)
+
+        'Keep going until we hit the '}' token or a parse error
+        While True
+
+            If tm.CurrentToken().IsEndOfStatement() Then
+                Compiler.Report.ShowMessage(Messages.VBNC30370, tm.CurrentToken().Location)
+                Return Nothing
+            End If
+
+            'Parse the ".Identifier" for the field to initialise
+            If Not tm.Accept(KS.Dot) Then
+                Compiler.Report.ShowMessage(Messages.VBNC30985, tm.CurrentToken().Location)
+                tm.GotoEndOfStatement(False)
+                Return Nothing
+            End If
+
+            Dim fieldIdentifier As Token
+
+            If Not tm.CurrentToken().IsIdentifier() Then
+                Compiler.Report.ShowMessage(Messages.VBNC30203, tm.CurrentToken().Location)
+                tm.GotoEndOfStatement(False)
+                Return Nothing
+            Else
+                fieldIdentifier = tm.CurrentToken()
+                tm.AcceptIdentifier()
+            End If
+
+            'Parse the "= Expression" for the expression to initialise the field with
+            If Not tm.Accept(KS.Equals) Then
+                Compiler.Report.ShowMessage(Messages.VBNC30984, tm.CurrentToken().Location)
+                tm.GotoEndOfStatement(False)
+                Return Nothing
+            End If
+
+            Dim fieldInitialiser As New FieldInitialiser(Parent)
+            Dim initialiserExpression As Expression = ParseExpression(fieldInitialiser)
+
+            If initialiserExpression Is Nothing Then
+                Compiler.Report.ShowMessage(Messages.VBNC30201, tm.CurrentToken().Location)
+                tm.GotoEndOfStatement(False)
+                Return Nothing
+            End If
+
+            'Fields can only be initialised once. Wait until the end of parsing the current initialiser to ensure
+            'we get the correct set of errors reported
+            If Not seenFields.Add(fieldIdentifier.Identifier) Then
+                Compiler.Report.ShowMessage(Messages.VBNC30989, fieldIdentifier.Location, fieldIdentifier.Identifier)
+                tm.GotoEndOfStatement(False)
+                Return Nothing
+            End If
+
+            'Build up the field accessor expression and add it to the list
+            fieldInitialiser.Init(New IdentifierOrKeyword(fieldInitialiser, fieldIdentifier), initialiserExpression)
+            fieldInitialisers.Add(fieldInitialiser)
+
+            'If we've hit the '}' that's it
+            If tm.Accept(KS.RBrace) Then
+                Exit While
+            End If
+
+            'Consume any comma
+            tm.Accept(KS.Comma)
+
+        End While
+
+        Return fieldInitialisers
+
     End Function
 
     Private Function ParseInterfacePropertyMemberDeclaration(ByVal Parent As TypeDeclaration, ByVal Info As ParseAttributableInfo) As InterfacePropertyMemberDeclaration

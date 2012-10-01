@@ -184,6 +184,25 @@ Public Class tm
         Loop
         If EatNewLine AndAlso CurrentToken.IsEndOfFile = False Then NextToken()
     End Sub
+
+    ''' <summary>
+    ''' Skips tokens until the end of the current statement is found.
+    ''' Returns if CodeEnd of EndOfFile found.
+    ''' </summary>
+    ''' <param name="EatNewLine">Eat the newline character?</param>
+    ''' <remarks></remarks>
+    Sub GotoEndOfStatement(ByVal EatNewLine As Boolean)
+
+        Do Until CurrentToken.IsEndOfStatement()
+            NextToken()
+        Loop
+
+        If EatNewLine AndAlso CurrentToken.IsEndOfFile = False Then
+            NextToken()
+        End If
+
+    End Sub
+
     ''' <summary>
     ''' If not the current token is a newline, then shows a message ("End of line expected")
     ''' and eats the newline. After this sub the current token will be the first after the newline

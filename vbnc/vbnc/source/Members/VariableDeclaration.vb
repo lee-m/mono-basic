@@ -35,6 +35,7 @@ Public MustInherit Class VariableDeclaration
     Private m_VariableInitializer As VariableInitializer
     Private m_ArgumentList As ArgumentList
     Private m_Referenced As Boolean
+    Private m_ObjMemberInitialiser As ObjectMemberInitializer
 
     Private m_VariableType As Mono.Cecil.TypeReference
 
@@ -45,25 +46,17 @@ Public MustInherit Class VariableDeclaration
     End Sub
 
     Sub New(ByVal Parent As ParsedObject, ByVal Modifiers As Modifiers, ByVal VariableIdentifier As VariableIdentifier, _
-    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList)
+    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList,
+    ByVal ObjMemberInitialiser As ObjectMemberInitializer)
         MyBase.New(Parent)
-        MyBase.Init(Modifiers, VariableIdentifier.Name)
-        m_VariableIdentifier = VariableIdentifier
-        m_IsNew = IsNew
-        m_TypeName = TypeName
-        m_VariableInitializer = VariableInitializer
-        m_ArgumentList = ArgumentList
+        Init(Modifiers, VariableIdentifier, IsNew, TypeName, VariableInitializer, ArgumentList, ObjMemberInitialiser)
     End Sub
 
     Sub New(ByVal Parent As ParsedObject, ByVal Modifiers As Modifiers, ByVal VariableIdentifier As Identifier, _
-    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList)
+    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList,
+    ByVal ObjMemberInitialiser As ObjectMemberInitializer)
         MyBase.New(Parent)
-        MyBase.Init(Modifiers, VariableIdentifier.Name)
-        m_VariableIdentifier = New VariableIdentifier(Me, VariableIdentifier)
-        m_IsNew = IsNew
-        m_TypeName = TypeName
-        m_VariableInitializer = VariableInitializer
-        m_ArgumentList = ArgumentList
+        Init(Modifiers, VariableIdentifier, IsNew, TypeName, VariableInitializer, ArgumentList, ObjMemberInitialiser)
     End Sub
 
     Sub New(ByVal Parent As ParsedObject, ByVal Identifier As Identifier, _
@@ -81,6 +74,29 @@ Public MustInherit Class VariableDeclaration
     Shadows Sub Init(ByVal Modifiers As Modifiers, ByVal Name As String, ByVal VariableType As Mono.Cecil.TypeReference)
         MyBase.Init(Modifiers, Name)
         m_VariableType = VariableType
+    End Sub
+
+    Shadows Sub Init(ByVal Modifiers As Modifiers, ByVal VariableIdentifier As Identifier, _
+    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList,
+    ByVal ObjMemberInitialiser As ObjectMemberInitializer)
+        MyBase.Init(Modifiers, VariableIdentifier.Name)
+        m_VariableIdentifier = New VariableIdentifier(Me, VariableIdentifier)
+        m_IsNew = IsNew
+        m_TypeName = TypeName
+        m_VariableInitializer = VariableInitializer
+        m_ArgumentList = ArgumentList
+    End Sub
+
+    Shadows Sub Init(ByVal Modifiers As Modifiers, ByVal VariableIdentifier As VariableIdentifier, _
+    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList,
+    ByVal ObjMemberInitialiser As ObjectMemberInitializer)
+        MyBase.Init(Modifiers, VariableIdentifier.Name)
+        m_VariableIdentifier = VariableIdentifier
+        m_IsNew = IsNew
+        m_TypeName = TypeName
+        m_VariableInitializer = VariableInitializer
+        m_ArgumentList = ArgumentList
+        m_ObjMemberInitialiser = ObjMemberInitialiser
     End Sub
 
     ReadOnly Property DeclaringMethod() As MethodDeclaration
@@ -167,8 +183,18 @@ Public MustInherit Class VariableDeclaration
                     If m_TypeName.IsNonArrayTypeName = False Then
                         result = Helper.AddError(Me) AndAlso result
                     End If
-                    m_NewExpression = New DelegateOrObjectCreationExpression(Me, m_TypeName.AsNonArrayTypeName, m_ArgumentList)
+
+                    Dim objMemInitialiser As ObjectMemberInitializer = Nothing
+
+                    If m_VariableInitializer IsNot Nothing _
+                       AndAlso TypeOf m_VariableInitializer.Initializer Is ObjectMemberInitializer Then
+                        objMemInitialiser = DirectCast(m_VariableInitializer.Initializer, ObjectMemberInitializer)
+                    End If
+
+                    m_NewExpression = New DelegateOrObjectCreationExpression(Me, m_TypeName.AsNonArrayTypeName, m_ArgumentList, objMemInitialiser)
+
                 End If
+
             ElseIf m_VariableIdentifier Is Nothing Then
                 'Do nothing, we've been created by an event that hasn't ResolveTypeReferences yet.
             ElseIf m_VariableIdentifier.Identifier.HasTypeCharacter Then
@@ -214,6 +240,7 @@ Public MustInherit Class VariableDeclaration
         Compiler.Report.Trace("{0}: VariableDeclaration.ResolveCode: {1}", Me.Location, Me.FullName)
 
         If m_TypeName IsNot Nothing Then result = m_TypeName.ResolveCode(Info) AndAlso result
+        If m_ObjMemberInitialiser IsNot Nothing Then result = m_ObjMemberInitialiser.ResolveCode(Info) AndAlso result
 
         result = MyBase.ResolveCode(ResolveInfo.Default(Info.Compiler)) AndAlso result
         If m_ArgumentList IsNot Nothing Then
@@ -251,6 +278,8 @@ Public MustInherit Class VariableDeclaration
             'End If
 
             result = MyBase.GenerateCode(Info) AndAlso result
+            If m_ObjMemberInitialiser IsNot Nothing Then result = m_ObjMemberInitialiser.GenerateCode(Info) AndAlso result
+
         End If
 
         Return result

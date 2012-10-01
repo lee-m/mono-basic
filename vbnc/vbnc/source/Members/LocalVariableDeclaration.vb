@@ -21,7 +21,7 @@
 ''' Represents one single variable of a VariableDeclarator.
 ''' 
 ''' VariableDeclarator  ::=
-'''  	VariableIdentifiers  [  As  [  New  ]  TypeName  [  (  ArgumentList  )  ]  ]  |
+'''  	VariableIdentifiers  [  As  [  New  ]  TypeName  [  (  ArgumentList  )  ]  ]  ObjectCreationExpressionInitializer |
 '''     VariableIdentifier   [  As  TypeName  ]  [  =  VariableInitializer  ]
 ''' </summary>
 ''' <remarks></remarks>
@@ -37,13 +37,15 @@ Public Class LocalVariableDeclaration
     End Sub
 
     Sub New(ByVal Parent As ParsedObject, ByVal Modifiers As Modifiers, ByVal VariableIdentifier As VariableIdentifier, _
-    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList)
-        MyBase.New(Parent, Modifiers, VariableIdentifier, IsNew, TypeName, VariableInitializer, ArgumentList)
+    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList,
+    ByVal ObjMemberInitialiser As ObjectMemberInitializer)
+        MyBase.New(Parent, Modifiers, VariableIdentifier, IsNew, TypeName, VariableInitializer, ArgumentList, ObjMemberInitialiser)
     End Sub
 
     Sub New(ByVal Parent As ParsedObject, ByVal Modifiers As Modifiers, ByVal VariableIdentifier As Identifier, _
-    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList)
-        MyBase.New(Parent, Modifiers, VariableIdentifier, IsNew, TypeName, VariableInitializer, ArgumentList)
+    ByVal IsNew As Boolean, ByVal TypeName As TypeName, ByVal VariableInitializer As VariableInitializer, ByVal ArgumentList As ArgumentList,
+    ByVal ObjMemberInitialiser As ObjectMemberInitializer)
+        MyBase.New(Parent, Modifiers, VariableIdentifier, IsNew, TypeName, VariableInitializer, ArgumentList, ObjMemberInitialiser)
     End Sub
 
     Sub New(ByVal Parent As ParsedObject, ByVal Identifier As Identifier, _

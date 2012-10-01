@@ -20,7 +20,7 @@
 
 ''' <summary>
 ''' DelegateCreationExpression ::= "New" NonArrayTypeName "(" Expression ")"
-''' ObjectCreationExpression   ::= "New" NonArrayTypeName [ "(" [ ArgumentList ] ")" ]
+''' ObjectCreationExpression   ::= "New" NonArrayTypeName [ "(" [ ArgumentList ] ")" ] ObjectCreationExpressionInitializer
 ''' 
 ''' A New expression is classified as a value and the result is the new instance of the type.
 ''' </summary>
@@ -30,6 +30,7 @@ Public Class DelegateOrObjectCreationExpression
 
     Private m_NonArrayTypeName As NonArrayTypeName
     Private m_ArgumentList As ArgumentList
+    Private m_ObjMemberInitialiser As ObjectMemberInitializer
 
     Private m_ResolvedType As Mono.Cecil.TypeReference
     Private m_MethodClassification As MethodGroupClassification
@@ -65,14 +66,15 @@ Public Class DelegateOrObjectCreationExpression
         m_ArgumentList = New ArgumentList(Me, AddressOfExpression)
     End Sub
 
-    Sub New(ByVal Parent As ParsedObject, ByVal TypeName As NonArrayTypeName, ByVal ArgumentList As ArgumentList)
+    Sub New(ByVal Parent As ParsedObject, ByVal TypeName As NonArrayTypeName, ByVal ArgumentList As ArgumentList, ByVal ObjMemberInitialiser As ObjectMemberInitializer)
         MyBase.new(Parent)
-        Me.Init(TypeName, ArgumentList)
+        Me.Init(TypeName, ArgumentList, ObjMemberInitialiser)
     End Sub
 
-    Sub Init(ByVal TypeName As NonArrayTypeName, ByVal ArgumentList As ArgumentList)
+    Sub Init(ByVal TypeName As NonArrayTypeName, ByVal ArgumentList As ArgumentList, ByVal ObjMemberInitialiser As ObjectMemberInitializer)
         m_NonArrayTypeName = TypeName
         m_ArgumentList = ArgumentList
+        m_ObjMemberInitialiser = ObjMemberInitialiser
     End Sub
 
     Sub Init(ByVal Type As Mono.Cecil.TypeReference, ByVal ArgumentList As ArgumentList)

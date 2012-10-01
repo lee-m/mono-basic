@@ -24687,4 +24687,72 @@
 		<file>Errors\30205-2.vb</file>
 		<error line="3" number="30205" message="End of statement expected." />
 	</test>
+	<test id="3173" name="30064-1" expectedexitcode="1" mytype="empty">
+		<file>Errors\30064-1.vb</file>
+		<error line="8" number="30064" message="'ReadOnly' variable cannot be the target of an assignment." />
+	</test>
+	<test id="3174" name="30985-2" expectedexitcode="1" mytype="empty">
+		<file>Errors\30985-2.vb</file>
+		<error line="10" number="30985" message="Name of field or property being initialized in an object initializer must start with '.'." />
+	</test>
+	<test id="3175" name="30985-3" expectedexitcode="1" mytype="empty">
+		<file>Errors\30985-3.vb</file>
+		<error line="11" number="30985" message="Name of field or property being initialized in an object initializer must start with '.'." />
+	</test>
+	<test id="3176" name="30985" expectedexitcode="1" mytype="empty">
+		<file>Errors\30985.vb</file>
+		<error line="14" number="30985" message="Name of field or property being initialized in an object initializer must start with '.'." />
+	</test>
+	<test id="3177" name="30985-1" expectedexitcode="1" mytype="empty">
+		<file>Errors\30985-1.vb</file>
+		<error line="10" number="30985" message="Name of field or property being initialized in an object initializer must start with '.'." />
+	</test>
+	<test id="3178" name="30984-1" expectedexitcode="1" mytype="empty">
+		<file>Errors\30984-1.vb</file>
+		<error line="11" number="30984" message="'=' expected (object initializer)." />
+	</test>
+	<test id="3179" name="30984" expectedexitcode="1" mytype="empty">
+		<file>Errors\30984.vb</file>
+		<error line="21" number="30984" message="'=' expected (object initializer)." />
+	</test>
+	<test id="3180" name="30987" expectedexitcode="1" mytype="empty">
+		<file>Errors\30987.vb</file>
+		<error line="14" number="30987" message="'{' expected." />
+	</test>
+	<test id="3181" name="30989" expectedexitcode="1" mytype="empty">
+		<file>Errors\30989.vb</file>
+		<error line="9" number="30989" message="Multiple initializations of 'Foo'.  Fields and properties can be initialized only once in an object initializer expression." />
+	</test>
+	<test id="3182" name="30201-2" expectedexitcode="1" mytype="empty">
+		<file>Errors\30201-2.vb</file>
+		<error line="14" number="30201" message="Expression expected." />
+	</test>
+	<test id="3183" name="30203-3" expectedexitcode="1" mytype="empty">
+		<file>Errors\30203-3.vb</file>
+		<error line="11" number="30203" message="Identifier expected." />
+	</test>
+	<test id="3184" name="30205-3" expectedexitcode="1" mytype="empty">
+		<file>Errors\30205-3.vb</file>
+		<error line="10" number="30205" message="End of statement expected." />
+	</test>
+	<test id="3185" name="30370" expectedexitcode="1" mytype="empty">
+		<file>Errors\30370.vb</file>
+		<error line="14" number="30370" message="'}' expected." />
+	</test>
+	<test id="3186" name="30390-1" expectedexitcode="1" mytype="empty">
+		<file>Errors\30390-1.vb</file>
+		<error line="8" number="30390" message="'SomeClass.TestClass.Field' is not accessible in this context because it is 'Private'." />
+	</test>
+	<test id="3187" name="30456-4" expectedexitcode="1" mytype="empty">
+		<file>Errors\30456-4.vb</file>
+		<error line="8" number="30456" message="'XXX' is not a member of 'SomeClass.TestClass'." />
+	</test>
+	<test id="3188" name="30526" expectedexitcode="1" mytype="empty">
+		<file>Errors\30526.vb</file>
+		<error line="14" number="30526" message="Property 'Foo' is 'ReadOnly'." />
+	</test>
+	<test id="3189" name="30569" expectedexitcode="1" mytype="empty">
+		<file>Errors\30569.vb</file>
+		<error line="10" number="30569" message="'New' cannot be used on a class that is declared 'MustInherit'." />
+	</test>
 </rt>

@@ -68,10 +68,12 @@
 ../../source/Members/AutoPropertyDeclaration.vb
 ../../source/Members/EventHandlerDeclaration.vb
 ../../source/Members/EventDeclaration.vb
+../../source/Members/FieldInitialiser.vb
 ../../source/Members/LocalVariableDeclaration.vb
 ../../source/Members/MemberDeclaration.vb
 ../../source/Members/MethodDeclaration.vb
 ../../source/Members/MethodResolver.vb
+../../source/Members/ObjectMemberInitialiser.vb
 ../../source/Members/PropertyDeclaration.vb
 ../../source/Members/PropertyHandlerDeclaration.vb
 ../...source/Members/PropertySignature.vb

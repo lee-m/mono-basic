@@ -806,7 +806,7 @@
 	</Message>
 	<Message id="30201" level="Error">
 		<Comment>NC</Comment>
-		<VBNCValue>Expected expression.</VBNCValue>
+		<VBNCValue>Expression expected.</VBNCValue>
 		<VBValue>Expression expected.</VBValue>
 	</Message>
 	<Message id="30202" level="Error">
@@ -1286,7 +1286,7 @@
 	</Message>
 	<Message id="30370" level="Error">
 		<Comment>NC</Comment>
-		<VBNCValue>CHANGEME</VBNCValue>
+		<VBNCValue>'}}' expected.</VBNCValue>
 		<VBValue>'}' expected.</VBValue>
 	</Message>
 	<Message id="30371" level="Error">
@@ -3033,6 +3033,26 @@
     <Comment>NC</Comment>
     <VBNCValue>Type of '{0}' is ambiguous because the loop bounds and the step clause do not convert to the same type.</VBNCValue>
     <VBValue>Type of 'i' is ambiguous because the loop bounds and the step clause do not convert to the same type.</VBValue>
+  </Message>
+	<Message id="30984" level="Error">
+    <Comment>NC</Comment>
+    <VBNCValue>'=' expected (object initializer).</VBNCValue>
+    <VBValue>'=' expected (object initializer).</VBValue>
+  </Message>					
+	<Message id="30985" level="Error">
+    <Comment>NC</Comment>
+    <VBNCValue>Name of field or property being initialized in an object initializer must start with '.'.</VBNCValue>
+    <VBValue>Name of field or property being initialized in an object initializer must start with '.'.</VBValue>
+  </Message>
+	<Message id="30987" level="Error">
+    <Comment>NC</Comment>
+    <VBNCValue>'{{' expected.</VBNCValue>
+    <VBValue>'{' expected.</VBValue>
+  </Message>
+	<Message id="30989" level="Error">
+    <Comment>NC</Comment>
+    <VBNCValue>Multiple initializations of '{0}'.  Fields and properties can be initialized only once in an object initializer expression.</VBNCValue>
+    <VBValue>Multiple initializations of '|0'.  Fields and properties can be initialized only once in an object initializer expression.</VBValue>
   </Message>
 	<Message id="31007" level="Error">
 		<Comment>NC</Comment>

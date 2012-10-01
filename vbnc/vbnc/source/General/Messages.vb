@@ -1143,7 +1143,7 @@ Public Enum Messages
     <Message(MessageLevel.Error)> VBNC30200 = 30200
 
     ''' <summary>
-    ''' VBNC = "Expected expression."
+    ''' VBNC = "Expression expected."
     ''' VB   = "Expression expected."
     ''' </summary>
     ''' <remarks></remarks>
@@ -1815,7 +1815,7 @@ Public Enum Messages
     <Message(MessageLevel.Error)> VBNC30369 = 30369
 
     ''' <summary>
-    ''' VBNC = "CHANGEME"
+    ''' VBNC = "'}}' expected."
     ''' VB   = "'}' expected."
     ''' </summary>
     ''' <remarks></remarks>
@@ -4263,6 +4263,34 @@ Public Enum Messages
     ''' </summary>
     ''' <remarks></remarks>
     <Message(MessageLevel.Error)> VBNC30983 = 30983
+
+    ''' <summary>
+    ''' VBNC = "'=' expected (object initializer)."
+    ''' VB   = "'=' expected (object initializer)."
+    ''' </summary>
+    ''' <remarks></remarks>
+    <Message(MessageLevel.Error)> VBNC30984 = 30984
+
+    ''' <summary>
+    ''' VBNC = "Name of field or property being initialized in an object initializer must start with '.'."
+    ''' VB   = "Name of field or property being initialized in an object initializer must start with '.'."
+    ''' </summary>
+    ''' <remarks></remarks>
+    <Message(MessageLevel.Error)> VBNC30985 = 30985
+
+    ''' <summary>
+    ''' VBNC = "'{{' expected."
+    ''' VB   = "'{' expected."
+    ''' </summary>
+    ''' <remarks></remarks>
+    <Message(MessageLevel.Error)> VBNC30987 = 30987
+
+    ''' <summary>
+    ''' VBNC = "Multiple initializations of '{0}'.  Fields and properties can be initialized only once in an object initializer expression."
+    ''' VB   = "Multiple initializations of '|0'.  Fields and properties can be initialized only once in an object initializer expression."
+    ''' </summary>
+    ''' <remarks></remarks>
+    <Message(MessageLevel.Error)> VBNC30989 = 30989
 
     ''' <summary>
     ''' VBNC = "CHANGEME"
